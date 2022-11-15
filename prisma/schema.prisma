@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum ChatRoomType {
+  COMMON
+  GAME
+  FIREND
+  LIFE
+  CITY
+  CLUB
+}
+
+model User {
+  id              String     @id @default(auto()) @map("_id") @db.ObjectId
+  username        String     @unique
+  email           String?    @unique
+  nickname        String
+  password        String
+  // 管理的频道
+  managedChannel  Channel[]
+  // 创建的聊天室
+  createdChatRoom ChatRoom[] @relation(name: "creator")
+  // 添加的聊天室
+  addedChatRoom   ChatRoom[] @relation(name: "ChatRoomMember", fields: [chatRoomId], references: [id])
+  chatRoomId      String[]   @db.ObjectId
+}
+
+model ChatRoom {
+  id        String       @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  // 聊天室类型
+  type      ChatRoomType @default(COMMON)
+  // 频道分组
+  group     Group[]
+  // 创建者
+  creator   User         @relation(name: "creator", fields: [creatorId], references: [id])
+  creatorId String       @db.ObjectId
+  // 聊天室成员
+  member    User[]       @relation(name: "ChatRoomMember", fields: [memberId], references: [id])
+  memberId  String[]     @db.ObjectId
+}
+
+model Group {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  chatRoom   ChatRoom  @relation(fields: [chatRoomId], references: [id])
+  chatRoomId String    @db.ObjectId
+  channel    Channel[]
+}
+
+model Channel {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  operator User   @relation(fields: [userId], references: [id])
+  userId   String @db.ObjectId
+  group    Group  @relation(fields: [groupId], references: [id])
+  groupId  String @db.ObjectId
+}
