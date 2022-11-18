@@ -19,37 +19,70 @@ enum ChatRoomType {
   CLUB
 }
 
+enum MessageType {
+  TEXT
+  AUDIO
+}
+
+enum ChannelType {
+  TEXT
+  VIDEO
+  AUDIO
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  UNKNOWN
+}
+
 model User {
-  id              String     @id @default(auto()) @map("_id") @db.ObjectId
-  username        String     @unique
-  email           String?    @unique
-  nickname        String
-  password        String
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  username         String             @unique
+  email            String             @unique
+  nickname         String
+  password         String
+  gender           Gender?            @default(UNKNOWN)
+  signature        String?
+  createAt         DateTime           @default(now()) @db.Timestamp
   // 管理的频道
-  managedChannel  Channel[]
+  managedChannel   Channel[]          @relation(fields: [managedChannelId], references: [id])
+  managedChannelId String[]           @db.ObjectId
   // 创建的聊天室
-  createdChatRoom ChatRoom[] @relation(name: "creator")
+  createdChatRoom  ChatRoom[]         @relation(name: "Creator")
   // 添加的聊天室
-  addedChatRoom   ChatRoom[] @relation(name: "ChatRoomMember", fields: [chatRoomId], references: [id])
-  chatRoomId      String[]   @db.ObjectId
+  addedChatRoom    ChatRoom[]         @relation(name: "Member", fields: [addedChatRoomId], references: [id])
+  addedChatRoomId  String[]           @db.ObjectId
+  // 发送到频道的消息
+  messageToChannel MessageToChannel[]
+  // 发送给别人的消息
+  messageTo        MessageToUser[]    @relation("Sender")
+  // 收到的消息
+  messageFrom      MessageToUser[]    @relation("Receiver")
+  // 拥有的好友
+  friendIHave      Friend[]           @relation("FriendIHave", fields: [friendIHaveId], references: [id])
+  friendIHaveId    String[]           @db.ObjectId
+  // 是谁的好友
+  friendIWas       Friend[]           @relation("FriendIWas", fields: [friendIWasId], references: [id])
+  friendIWasId     String[]           @db.ObjectId
 }
 
 model ChatRoom {
-  id        String       @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  // 聊天室类型
-  type      ChatRoomType @default(COMMON)
-  // 频道分组
-  group     Group[]
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  type        ChatRoomType   @default(COMMON)
+  description String?
+  group       ChannelGroup[]
+  createAt    DateTime       @default(now()) @db.Timestamp
   // 创建者
-  creator   User         @relation(name: "creator", fields: [creatorId], references: [id])
-  creatorId String       @db.ObjectId
+  creator     User           @relation(name: "Creator", fields: [creatorId], references: [id])
+  creatorId   String         @db.ObjectId
   // 聊天室成员
-  member    User[]       @relation(name: "ChatRoomMember", fields: [memberId], references: [id])
-  memberId  String[]     @db.ObjectId
+  member      User[]         @relation(name: "Member", fields: [memberId], references: [id])
+  memberId    String[]       @db.ObjectId
 }
 
-model Group {
+model ChannelGroup {
   id         String    @id @default(auto()) @map("_id") @db.ObjectId
   name       String
   chatRoom   ChatRoom  @relation(fields: [chatRoomId], references: [id])
@@ -58,10 +91,45 @@ model Group {
 }
 
 model Channel {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  name     String
-  operator User   @relation(fields: [userId], references: [id])
-  userId   String @db.ObjectId
-  group    Group  @relation(fields: [groupId], references: [id])
-  groupId  String @db.ObjectId
+  id         String             @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  type       ChannelType        @default(TEXT)
+  operator   User[]             @relation(fields: [operatorId], references: [id])
+  operatorId String[]           @db.ObjectId
+  group      ChannelGroup       @relation(fields: [groupId], references: [id])
+  groupId    String             @db.ObjectId
+  message    MessageToChannel[]
+}
+
+model MessageToChannel {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  sender      User        @relation(fields: [senderId], references: [id])
+  senderId    String      @db.ObjectId
+  channel     Channel     @relation(fields: [channelId], references: [id])
+  channelId   String      @db.ObjectId
+  message     Bytes       @db.BinData
+  messageType MessageType @default(TEXT)
+  createAt    DateTime    @default(now()) @db.Timestamp
+}
+
+model MessageToUser {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  sender      User        @relation("Sender", fields: [senderId], references: [id])
+  senderId    String      @db.ObjectId
+  receiver    User        @relation("Receiver", fields: [receiverId], references: [id])
+  receiverId  String      @db.ObjectId
+  message     Bytes       @db.BinData
+  messageType MessageType @default(TEXT)
+  createAt    DateTime    @default(now()) @db.Timestamp
+}
+
+model Friend {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  // 我拥有的好友
+  friendIHave   User[]   @relation(name: "FriendIHave", fields: [friendIHaveId], references: [id])
+  friendIHaveId String[] @db.ObjectId
+  // 我是谁的好友
+  friendIWas    User[]   @relation(name: "FriendIWas", fields: [friendIWasId], references: [id])
+  friendIWasId  String[] @db.ObjectId
+  createAt      DateTime @default(now()) @db.Timestamp
 }
