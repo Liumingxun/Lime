@@ -43,6 +43,7 @@ model User {
   nickname         String
   password         String
   gender           Gender?            @default(UNKNOWN)
+  avatar           String?
   signature        String?
   createAt         DateTime           @default(now()) @db.Timestamp
   // 管理的频道
