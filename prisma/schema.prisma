@@ -44,7 +44,7 @@ model User {
   password         String
   gender           Gender?            @default(UNKNOWN)
   avatar           String?
-  signature        String?
+  bio              String?
   createAt         DateTime           @default(now()) @db.Timestamp
   // 管理的频道
   managedChannel   Channel[]          @relation(fields: [managedChannelId], references: [id])
@@ -100,6 +100,7 @@ model Channel {
   group      ChannelGroup       @relation(fields: [groupId], references: [id])
   groupId    String             @db.ObjectId
   message    MessageToChannel[]
+  createAt   DateTime           @default(now()) @db.Timestamp
 }
 
 model MessageToChannel {
@@ -133,4 +134,10 @@ model Friend {
   friendIWas    User[]   @relation(name: "FriendIWas", fields: [friendIWasId], references: [id])
   friendIWasId  String[] @db.ObjectId
   createAt      DateTime @default(now()) @db.Timestamp
+}
+
+model VerifyCode {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  email String @unique
+  code  String
 }
