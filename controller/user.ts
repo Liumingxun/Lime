@@ -5,7 +5,7 @@ import { prisma } from '../index'
 import mailerConfig from '../config/mailer'
 
 export const sendmail: Handler = function (req, res, next) {
-  const { to } = req.params
+  const { to } = req.body
   const mailer = nodemailer.createTransport({
     host: mailerConfig.host,
     port: 465,
@@ -39,14 +39,14 @@ export const sendmail: Handler = function (req, res, next) {
         .catch(() => {
           res.json({
             success: false,
-            message: 'Code exists',
+            message: '验证码已发送',
           })
         })
     }
     else {
       res.json({
         success: false,
-        message: 'Send fail',
+        message: '发送失败',
       })
     }
   }).catch(err => next(err))
@@ -80,14 +80,14 @@ export const login: Handler = function (req, res, next) {
       else {
         res.json({
           success: false,
-          message: 'password error',
+          message: '密码错误',
         })
       }
     }
     else {
       res.json({
         success: false,
-        message: 'user not found',
+        message: '用户不存在',
       })
     }
   }).catch(err => next(err))
@@ -118,14 +118,14 @@ export const register: Handler = function (req, res, next) {
       else {
         res.json({
           success: false,
-          message: 'code error',
+          message: '验证码错误',
         })
       }
     }
     else {
       res.json({
         success: false,
-        message: 'code not found',
+        message: '没有验证码',
       })
     }
   }).catch(err => next(err))
