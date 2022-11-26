@@ -12,6 +12,7 @@ specifiers:
   express: ^4.18.2
   express-jwt: ^7.7.7
   express-validator: ^6.14.2
+  husky: ^8.0.2
   jsonwebtoken: ^8.5.1
   morgan: ^1.10.0
   nodemailer: ^6.8.0
@@ -39,6 +40,7 @@ devDependencies:
   '@types/node': 18.11.9
   '@types/nodemailer': 6.4.6
   eslint: 8.28.0
+  husky: 8.0.2
   nodemon: 2.0.20
   prisma: 4.6.1
   ts-node: 10.9.1_cbe7ovvae6zqfnmtgctpgpys54
@@ -1734,6 +1736,12 @@ packages:
       statuses: 2.0.1
       toidentifier: 1.0.1
     dev: false
+
+  /husky/8.0.2:
+    resolution: {integrity: sha512-Tkv80jtvbnkK3mYWxPZePGFpQ/tT3HNSs/sasF9P2YfkMezDl3ON37YN6jUUI4eTg5LcyVynlb6r4eyvOmspvg==}
+    engines: {node: '>=14'}
+    hasBin: true
+    dev: true
 
   /iconv-lite/0.4.24:
     resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}

@@ -27,6 +27,7 @@
     "@types/node": "18.11.9",
     "@types/nodemailer": "^6.4.6",
     "eslint": "^8.28.0",
+    "husky": "^8.0.2",
     "nodemon": "^2.0.20",
     "prisma": "^4.6.1",
     "ts-node": "^10.9.1",
