@@ -1,0 +1,12 @@
+GET http://localhost:21380/api/test/
+###
+
+POST http://localhost:21380/api/chatroom
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+  "name": "test room"
+}
+
+###

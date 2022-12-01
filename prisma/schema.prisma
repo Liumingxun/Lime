@@ -13,7 +13,7 @@ datasource db {
 enum ChatRoomType {
   COMMON
   GAME
-  FIREND
+  FRIEND
   LIFE
   CITY
   CLUB

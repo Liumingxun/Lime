@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer'
 import jwt from 'jsonwebtoken'
+import type { Request } from 'express-jwt'
 import type { Handler } from '../types'
 import { prisma } from '../index'
 import mailerConfig from '../config/mailer'
@@ -51,6 +52,7 @@ export const sendmail: Handler = function (req, res, next) {
     }
   }).catch(err => next(err))
 }
+
 export const login: Handler = function (req, res, next) {
   const { username, password } = req.body
   prisma.user.findUnique({
@@ -92,6 +94,7 @@ export const login: Handler = function (req, res, next) {
     }
   }).catch(err => next(err))
 }
+
 export const register: Handler = function (req, res, next) {
   const { username, password, email, code } = req.body
   prisma.verifyCode.findUnique({
@@ -130,8 +133,9 @@ export const register: Handler = function (req, res, next) {
     }
   }).catch(err => next(err))
 }
-export const profile: Handler = function (req, res, next) {
-  const { id } = (req as any).auth
+
+export const profile: Handler = function (req: Request, res, next) {
+  const { id } = req.auth!
   prisma.user.findUniqueOrThrow({
     where: {
       id,
