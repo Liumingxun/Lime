@@ -14,9 +14,11 @@ app.use(expressjwt({
   algorithms: ['HS256'],
   secret: process.env.HS256_SECRET!,
 }).unless({
-  path: ['/api/user/login', '/api/user/register', {
-    url: /^\/api\/user\/sendmail/,
-  }],
+  path: [
+    '/api/user/login',
+    '/api/user/register',
+    { url: /^\/api\/user\/sendmail/ },
+    /^\/api\/test/],
   useOriginalUrl: true,
 }))
 
