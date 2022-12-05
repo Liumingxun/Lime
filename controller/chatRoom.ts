@@ -1,7 +1,6 @@
 import type { ChatRoomType } from '@prisma/client'
 import { Prisma } from '@prisma/client'
-import type { Request } from 'express-jwt'
-import type { Handler } from '../types'
+import type { Handler, Request } from '../types'
 import { prisma } from '../index'
 
 const chatRoomCreate = (name: string, id: string, type?: ChatRoomType) => Prisma.validator<Prisma.ChatRoomCreateInput>()({
@@ -62,40 +61,7 @@ export const join: Handler = function (req: Request, res, next) {
   }).catch(err => next(err))
 }
 
-// @todo: 分页器
-const list = function (where?: Prisma.ChatRoomWhereInput,
-  orderBy?: Prisma.ChatRoomOrderByWithRelationInput) {
-  return prisma.chatRoom.findMany({
-    where,
-    orderBy,
-  })
-}
-
-export const all: Handler = function (req, res, next) {
-  list().then((data) => {
-    res.json({
-      success: true,
-      message: 'success',
-      data,
-    })
-  }).catch(err => next(err))
-}
-
-export const have: Handler = function (req: Request, res, next) {
-  list({
-    memberId: {
-      has: req.auth!.id,
-    },
-  }).then((data) => {
-    res.json({
-      success: true,
-      message: 'success',
-      data,
-    })
-  }).catch(err => next(err))
-}
-
-export const getProfile: Handler = function (req: Request, res, next) {
+export const profile: Handler = function (req: Request, res, next) {
   const { chatRoomId } = req.params
   prisma.chatRoom.findUnique({
     where: {
@@ -109,6 +75,7 @@ export const getProfile: Handler = function (req: Request, res, next) {
       },
     },
   }).then((_data) => {
+    // @fixme
     res.json({
       success: true,
       message: 'success',

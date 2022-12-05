@@ -157,3 +157,12 @@ export const profile: Handler = function (req: Request, res, next) {
     })
   }).catch(err => next(err))
 }
+
+// @todo
+export const joinChatRoom: Handler = function (_req: Request, _res, _next) {
+  throw new Error('not implemented')
+}
+// @todo
+export const quitChatRoom: Handler = function (_req: Request, _res, _next) {
+  throw new Error('not implemented')
+}

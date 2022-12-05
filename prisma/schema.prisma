@@ -36,6 +36,13 @@ enum Gender {
   UNKNOWN
 }
 
+enum FriendStatus {
+  REQUEST
+  ACCEPT
+  REJECT
+  BLOCK
+}
+
 model User {
   id               String             @id @default(auto()) @map("_id") @db.ObjectId
   username         String             @unique
@@ -126,14 +133,15 @@ model MessageToUser {
 }
 
 model Friend {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  status        FriendStatus @default(REQUEST)
   // 我拥有的好友
-  friendIHave   User[]   @relation(name: "FriendIHave", fields: [friendIHaveId], references: [id])
-  friendIHaveId String[] @db.ObjectId
+  friendIHave   User[]       @relation(name: "FriendIHave", fields: [friendIHaveId], references: [id])
+  friendIHaveId String[]     @db.ObjectId
   // 我是谁的好友
-  friendIWas    User[]   @relation(name: "FriendIWas", fields: [friendIWasId], references: [id])
-  friendIWasId  String[] @db.ObjectId
-  createAt      DateTime @default(now()) @db.Timestamp
+  friendIWas    User[]       @relation(name: "FriendIWas", fields: [friendIWasId], references: [id])
+  friendIWasId  String[]     @db.ObjectId
+  createAt      DateTime     @default(now()) @db.Timestamp
 }
 
 model VerifyCode {
