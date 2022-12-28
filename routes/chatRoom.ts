@@ -8,4 +8,6 @@ const router = Router()
 router.post('/', chatRoomValidator.create, chatRoomController.create)
 router.delete('/:chatRoomId', chatRoomController.dismiss)
 
+router.get('/:chatRoomId', chatRoomController.profile)
+
 export default router

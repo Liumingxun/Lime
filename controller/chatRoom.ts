@@ -1,6 +1,6 @@
-import type { ChatRoomType } from '@prisma/client'
 import { Prisma } from '@prisma/client'
-import type { Handler, Request } from '../types'
+import type { Response } from 'express'
+import type { BaseResponse, ChatRoomType, ChatRoomWithChannel, Handler, Request } from '../types'
 import { prisma } from '../index'
 
 const chatRoomCreate = (name: string, id: string, type?: ChatRoomType) => Prisma.validator<Prisma.ChatRoomCreateInput>()({
@@ -61,7 +61,7 @@ export const join: Handler = function (req: Request, res, next) {
   }).catch(err => next(err))
 }
 
-export const profile: Handler = function (req: Request, res, next) {
+export const profile: Handler = function (req: Request, res: Response<BaseResponse<ChatRoomWithChannel | null>>, next) {
   const { chatRoomId } = req.params
   prisma.chatRoom.findUnique({
     where: {
@@ -74,12 +74,39 @@ export const profile: Handler = function (req: Request, res, next) {
         },
       },
     },
-  }).then((_data) => {
-    // @fixme
+  }).then((data) => {
     res.json({
       success: true,
       message: 'success',
-      // data,
+      data,
     })
   }).catch(err => next(err))
+}
+
+export const list: Handler = function (req: Request, res, next) {
+  const { id } = req.auth!
+  const { list, type } = req.query
+  if (list === 'mine') {
+    prisma.chatRoom.findMany({
+      where: {
+        memberId: {
+          has: id,
+        },
+        type,
+      },
+      include: {
+        group: {
+          include: {
+            channel: true,
+          },
+        },
+      },
+    }).then((data) => {
+      res.json({
+        success: true,
+        message: 'success',
+        data,
+      })
+    }).catch(err => next(err))
+  }
 }
